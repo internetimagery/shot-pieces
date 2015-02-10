@@ -128,7 +128,7 @@ class Callback(object):
 
 ###################
 
-class GUI(object): #main GUI window
+	class GUI(object): #main GUI window
 	def __init__(self):
 		self.GUI = {} #set up GUI elements
 		nodes = listNodes()
