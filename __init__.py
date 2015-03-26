@@ -91,6 +91,7 @@ class ShotPiece(object): #A single shot piece
 			cmds.button( self.GUI['button1'], e=True, l=self.data['nts'], bgc=self.data['col'], h=height)
 		except KeyError:
 			pass
+
 	def read(self):
 		if self.node and cmds.objExists(self.node):
 			self.data['nts'] = cmds.getAttr( (self.node+'.nts') ) if cmds.getAttr( (self.node+'.nts') ) else 'Edit text.'
@@ -133,6 +134,7 @@ class GUI(object): #main GUI window
 		self.GUI = {} #set up GUI elements
 		nodes = listNodes()
 
+		createNodeContainer()
 		self.GUI['window'] = cmds.window( title = 'Shot Pieces', rtf=True, s=False)
 		self.GUI['layout1'] = cmds.columnLayout( adjustableColumn=True )
 		self.GUI['button1'] = cmds.button( l='Create Shot Piece', h=25, c=self.AddPiece )
