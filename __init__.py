@@ -128,8 +128,6 @@ class GUI(object):  # main GUI window
         self.GUI['layout1'] = cmds.columnLayout(adjustableColumn=True)
         self.GUI['button1'] = cmds.button(l='Create Shot Piece', h=25, c=self.AddPiece)
         cmds.separator()
-        # cmds.setParent('..')
-        # cmds.showWindow(self.GUI['window'])
         allowed_areas = ['right', 'left']
         self.GUI['dock'] = cmds.dockControl(a='left', content=self.GUI['window'], aa=allowed_areas, fl=True, l='Shot Pieces', fcc=self.MoveDock, vcc=self.CloseDock)
         if piece:  # generate GUI
