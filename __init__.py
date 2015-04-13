@@ -122,7 +122,6 @@ class GUI(object):  # main GUI window
 
     def __init__(self):
         self.GUI = {}  # set up GUI elements
-        piece = pieceInit()
 
         self.GUI['window'] = cmds.window(title='Shot Pieces', rtf=True, s=False)
         self.GUI['layout1'] = cmds.columnLayout(adjustableColumn=True)
@@ -130,6 +129,18 @@ class GUI(object):  # main GUI window
         cmds.separator()
         allowed_areas = ['right', 'left']
         self.GUI['dock'] = cmds.dockControl(a='left', content=self.GUI['window'], aa=allowed_areas, fl=True, l='Shot Pieces', fcc=self.MoveDock, vcc=self.CloseDock)
+
+        cmds.scriptJob(e=["PostSceneRead", self.RefreshGUI], p=self.GUI["window"])
+        cmds.scriptJob(e=["NewSceneOpened", self.RefreshGUI], p=self.GUI["window"])
+        self.RefreshGUI()
+
+    def RefreshGUI(self, *args):  # Refresh the gui
+        existing = cmds.layout(self.GUI["layout1"], q=True, ca=True)
+        if existing:
+            for ui in existing:
+                if "button" in ui and ui not in self.GUI["button1"] and cmds.control(ui, ex=True):
+                    cmds.deleteUI(ui, control=True)
+        piece = pieceInit()
         if piece:  # generate GUI
             for n in piece:
                 n.createGUI(self.GUI['layout1'])
@@ -139,10 +150,10 @@ class GUI(object):  # main GUI window
 
     def MoveDock(self):
         if cmds.dockControl(self.GUI['dock'], q=True, fl=True):
-            print "Window Floating"
+            print "Window Floating."
         else:
             area = cmds.dockControl(self.GUI['dock'], q=True, a=True)
-            print "Window Docked into %s" % area
+            print "Window docked into %s." % area
 
     def CloseDock(self, *loop):
         visible = cmds.dockControl(self.GUI['dock'], q=True, vis=True)
