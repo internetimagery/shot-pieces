@@ -5,6 +5,7 @@ import json
 # Created 17/04/14 Jason Dixon
 # http://internetimagery.com/
 
+shot_save_name = "shot_piece"
 ################### SAVING DATA INTO THE SCENE OUTLINER
 
 
@@ -21,23 +22,19 @@ def delete(uuid):
 
 
 def listShots():
-    name = "shot_piece"
-    return [val for i, val in enumerate(cmds.fileInfo(q=True)) if not i % 2 and name in val]
+    return [val for i, val in enumerate(cmds.fileInfo(q=True)) if not i % 2 and shot_save_name in val]
 
 
 def pieceInit():
     return [ShotPiece(shot) for shot in listShots()]
 
-# Generate unique shot name
-
 
 def uuid():
-    base = "shot_piece"
     i = 0
-    name = "%s_%s" % (base, i)
+    name = "%s_%s" % (shot_save_name, i)
     while len(cmds.fileInfo(name, q=True)) != 0:
         i += 1
-        name = "%s_%s" % (base, i)
+        name = "%s_%s" % (shot_save_name, i)
     return name
 
 ###################
