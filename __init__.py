@@ -7,8 +7,6 @@ import persistance
 
 ################### SAVING DATA INTO THE SCENE OUTLINER
 
-data_name = 'Shot_Pieces_Data'
-
 # Save off the data
 
 
@@ -54,7 +52,11 @@ def uuid():
 
 
 def windowCheck(mod):  # check GUI exists
-    return cmds.window(mod.GUI['window'], exists=True, q=True)
+    return cmds.window(mod.GUI['window'], exists=True)
+
+
+def dockCheck(mod):
+    return cmds.dockControl(mod.GUI["dock"], ex=True)
 
 
 def warningMessage(message):
@@ -92,7 +94,7 @@ class ShotPiece(object):  # A single shot piece
             self.data['nts'] = data["nts"] if data['nts'] else "Edit text."
             self.data['min'] = data["min"] if data["min"] else 0
             self.data['max'] = data["max"] if data["max"] else 0
-            self.data['col'] = data["col"] if data["col"] else [0.3,0.3,0.3]
+            self.data['col'] = data["col"] if data["col"] else [0.3, 0.3, 0.3]
             return self.data
 
     def createGUI(self, layout):
@@ -131,7 +133,6 @@ class GUI(object):  # main GUI window
 
     def __init__(self):
         self.GUI = {}  # set up GUI elements
-        self.data = persistance.load("shotdata")
         piece = pieceInit()
 
         self.GUI['window'] = cmds.window(title='Shot Pieces', rtf=True, s=False)
@@ -141,13 +142,27 @@ class GUI(object):  # main GUI window
         # cmds.setParent('..')
         # cmds.showWindow(self.GUI['window'])
         allowed_areas = ['right', 'left']
-        self.GUI['dock'] = cmds.dockControl(a='left', content=self.GUI['window'], aa=allowed_areas, fl=True, l='Shot Pieces')
+        self.GUI['dock'] = cmds.dockControl(a='left', content=self.GUI['window'], aa=allowed_areas, fl=True, l='Shot Pieces', fcc=self.MoveDock, vcc=self.CloseDock)
         if piece:  # generate GUI
             for n in piece:
                 n.createGUI(self.GUI['layout1'])
 
     def AddPiece(self, button):  # create new button
         CreatePiece(self, False)
+
+    def MoveDock(self):
+        if cmds.dockControl(self.GUI['dock'], q=True, fl=True):
+            print "Window Floating"
+        else:
+            area = cmds.dockControl(self.GUI['dock'], q=True, a=True)
+            print "Window Docked into %s" % area
+
+    def CloseDock(self, *loop):
+        visible = cmds.dockControl(self.GUI['dock'], q=True, vis=True)
+        if not visible and loop:
+            cmds.scriptJob(ie=self.CloseDock, p=self.GUI['dock'], ro=True)
+        elif not visible:
+            cmds.deleteUI(self.GUI['dock'], control=True)
 
 ###################
 
@@ -198,7 +213,7 @@ class CreatePiece(object):
         cmds.intField(self.GUI['int2'], e=True, v=time2)
 
     def SendPiece(self, button):
-        if self.edit or windowCheck(self.mod):
+        if self.edit or dockCheck(self.mod):
             text = cmds.scrollField(self.GUI['scrollfield1'], q=True, text=True).strip()
             if text:
                 time1 = cmds.intField(self.GUI['int1'], v=True, q=True)
