@@ -1,40 +1,32 @@
 import maya.cmds as cmds
 import maya.mel as mel
-import persistance
+import json
 
 # Created 17/04/14 Jason Dixon
 # http://internetimagery.com/
 
 ################### SAVING DATA INTO THE SCENE OUTLINER
 
-# Save off the data
-
 
 def save(uuid, data):
-    persistance.save(uuid, data)
-
-# Load data given index
+    cmds.fileInfo(uuid, json.dumps(data))
 
 
 def load(uuid):
-    return persistance.load(uuid)
-
-# Remove Data
+    return json.loads(cmds.fileInfo(uuid, q=True)[0].decode("unicode_escape"))
 
 
 def delete(uuid):
-    persistance.delete(uuid)
+    cmds.fileInfo(rm=uuid)
 
-# Create a new ShotPiece class for each item TODO: map out a logical order for the pieces
+
+def listShots():
+    name = "shot_piece"
+    return [val for i, val in enumerate(cmds.fileInfo(q=True)) if not i % 2 and name in val]
 
 
 def pieceInit():
-    reply = []
-    shots = persistance.ls()
-    for shot in shots:
-        if "shot_piece" in shot[0]:
-            reply.append(ShotPiece(shot[0]))
-    return reply
+    return [ShotPiece(shot) for shot in listShots()]
 
 # Generate unique shot name
 
@@ -43,7 +35,7 @@ def uuid():
     base = "shot_piece"
     i = 0
     name = "%s_%s" % (base, i)
-    while persistance.exists(name):
+    while len(cmds.fileInfo(name, q=True)) != 0:
         i += 1
         name = "%s_%s" % (base, i)
     return name
