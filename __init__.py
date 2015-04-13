@@ -26,7 +26,7 @@ def listShots():
 
 
 def pieceInit():
-    return [ShotPiece(shot) for shot in listShots()]
+    return sorted([ShotPiece(shot) for shot in listShots()], key=lambda x: x.data["min"])
 
 
 def uuid():
