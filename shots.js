@@ -16,7 +16,7 @@ if (process.argv.length === 3) {
     re = /fileInfo\s+("|')(shot_piece_[\d]+)\1\s+("|')({.*?})\3\s*;/g;
     obj = {};
     while ((result = re.exec(data)) != null) {
-      obj[result[2]] = JSON.parse(result[4].replace(/\\"/g, "\""));
+      obj[result[2]] = JSON.parse(decodeURI(result[4]).replace(/\\"/g, "\""));
     }
     return console.log(obj);
   });

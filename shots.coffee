@@ -10,7 +10,7 @@ if process.argv.length is 3
 		re = /fileInfo\s+("|')(shot_piece_[\d]+)\1\s+("|')({.*?})\3\s*;/g
 		obj = {}
 		while (result = re.exec(data))?
-			obj[result[2]] = JSON.parse(result[4].replace(/\\"/g, "\""))
+			obj[result[2]] = JSON.parse(decodeURI(result[4]).replace(/\\"/g, "\""))
 		console.log obj
 else
 	console.log "Please provide a file to parse. :)"
